@@ -7,10 +7,14 @@ use bevy_third_person_camera::*;
 mod player;
 mod camera;
 mod world;
+mod post_processing;
+mod materials;
 
 use player::PlayerPlugin;
 use camera::CameraPlugin;
 use world::WorldPlugin;
+use post_processing::PostProcessPlugin;
+use materials::DefinedMaterialsPlugin;
 
 fn main() {
     let mut app = App::new();
@@ -32,6 +36,8 @@ fn main() {
         CameraPlugin,
         WorldPlugin,
         ThirdPersonCameraPlugin,
+        PostProcessPlugin,
+        DefinedMaterialsPlugin,
     ));
 
     app.run();
