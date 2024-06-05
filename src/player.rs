@@ -1,6 +1,7 @@
-use bevy::prelude::*;
+use bevy::{pbr::ExtendedMaterial, prelude::*, render::view::RenderLayers};
 use bevy_rapier3d::prelude::*;
-use bevy_third_person_camera::*;
+
+use crate::materials::{Thermal, ThermalMaterialExtension};
 
 pub struct PlayerPlugin;
 
@@ -13,52 +14,21 @@ impl Plugin for PlayerPlugin {
 }
 
 #[derive(Component)]
-struct Speed(f32);
-
-#[derive(Component)]
 struct Player;
 
 fn player_movement(
     keys: Res<ButtonInput<KeyCode>>,
-    time: Res<Time>,
-    mut player_query: Query<(&mut Transform, &Speed), With<Player>>,
-    camera_query: Query<&Transform, (With<Camera3d>, Without<Player>)>,
+    mut controllers: Query<&mut ExternalImpulse, With<Player>>,
 ) {
-    for (mut player_transform, player_speed) in player_query.iter_mut() {
-        let camera = match camera_query.get_single() {
-            Ok(c) => c,
-            Err(e) => Err(format!("Error quering camera: {}", e)).unwrap()
-        };
-
-        let mut direction = Vec3::ZERO;
-
-        // forward
-        if keys.pressed(KeyCode::KeyW) {
-            direction += *camera.forward();
+    for mut ext_imp in controllers.iter_mut() {
+        if keys.pressed(KeyCode::ArrowUp) {
+            ext_imp.impulse = Vec3::new(0.0, 5.0, 0.0);
         }
-
-        // right
-        if keys.pressed(KeyCode::KeyD) {
-            direction += *camera.right();
+        if keys.pressed(KeyCode::KeyJ) {
+            
         }
-
-        // left
-        if keys.pressed(KeyCode::KeyA) {
-            direction += *camera.left();
-        }
-
-        // back
-        if keys.pressed(KeyCode::KeyS) {
-            direction += *camera.back();
-        }
-
-        direction.y = 0.0;
-        let movement = direction.normalize_or_zero() * player_speed.0 * time.delta_seconds();
-        player_transform.translation += movement;
-
-        // rotate
-        if direction.length_squared() > 0.0 {
-            player_transform.look_to(direction, Vec3::Y);
+        if keys.pressed(KeyCode::ArrowDown) {
+            ext_imp.impulse = -Vec3::new(0.0, 5.0, 0.0);
         }
     }
 }
@@ -66,42 +36,47 @@ fn player_movement(
 fn spawn_player(
     mut commands: Commands,
     mut meshes: ResMut<Assets<Mesh>>,
-    mut materials: ResMut<Assets<StandardMaterial>>,
+    mut ext_materials: ResMut<Assets<ExtendedMaterial<StandardMaterial, ThermalMaterialExtension>>>,
 ) {
+    let thermal_render_layer = RenderLayers::layer(1);
+
+    let player_dimensions = Vec3::new(2.5, 1.0, 3.0);
+    let player_position = Vec3::new(0.0, 10.0, 0.0);
+    let player_name = "Player";
+
     let player = (
-        PbrBundle {
-            mesh: meshes.add(Cuboid::from_size(Vec3::new(2.0, 2.0, 2.0))),
-            material: materials.add(Color::RED),
-            transform: Transform::from_xyz(0.0, 15.0, 0.0),
+        MaterialMeshBundle {
+            mesh: meshes.add(Cuboid::from_size(player_dimensions)),
+            material: ext_materials.add(ExtendedMaterial {
+                base: StandardMaterial {
+                    base_color: Color::RED,
+                    ..default()
+                },
+                extension: ThermalMaterialExtension { 
+                    temperature: 15.0,
+                    intensity: 1.0,
+                    is_infrared_mode_active: 0,
+                },
+            }),
+            transform: Transform::from_xyz(player_position.x, player_position.y, player_position.z),
             ..default()
         },
+        Thermal,
         Player,
-        Speed(2.0),
         RigidBody::Dynamic,
-        Collider::cuboid(1.0, 1.0, 1.0),
-        Restitution::coefficient(0.7),
-        ThirdPersonCameraTarget,
-        Name::new("Player")
+        GravityScale(1.0),
+        ExternalForce {
+            force: Vec3::new(0.0, 73.8, 0.0),
+            ..default()
+        },
+        ExternalImpulse {
+            ..default()
+        },
+        Collider::cuboid(player_dimensions.x / 2.0, player_dimensions.y / 2.0, player_dimensions.z / 2.0),
+        //ThirdPersonCameraTarget,
+        Name::new(player_name),
+        thermal_render_layer,
     );
 
     commands.spawn(player);
 }
-
-// fn spawn_player(
-//     mut commands: Commands,
-//     assets: Res<AssetServer>,
-// ) {
-//     let player = (
-//         SceneBundle {
-//             scene: assets.load("drone.glb#Scene0"),
-//             transform: Transform::from_xyz(0.0, 0.5, 0.0)
-//                 .with_scale(Vec3::new(0.1, 0.1, 0.1)),
-//             ..default()
-//         },
-//         Player,
-//         Speed(2.0),
-//         ThirdPersonCameraTarget,
-//     );
-
-//     commands.spawn(player);
-// }
