@@ -1,5 +1,6 @@
 use bevy::{pbr::ExtendedMaterial, prelude::*, render::view::RenderLayers};
 use bevy_rapier3d::prelude::*;
+use bevy_third_person_camera::ThirdPersonCameraTarget;
 
 use crate::materials::{Thermal, ThermalMaterialExtension};
 
@@ -9,9 +10,12 @@ impl Plugin for PlayerPlugin {
     fn build(&self, app: &mut App) {
         app
             .add_systems(Startup, spawn_player)
-            .add_systems(Update, player_movement);
+            .add_systems(Update, (player_movement));
     }
 }
+
+#[derive(Component)]
+struct PlayerCameraTarget;
 
 #[derive(Component)]
 struct Player;
@@ -33,6 +37,17 @@ fn player_movement(
     }
 }
 
+// fn update_player_camera_target_position(
+//     player_position: Query<&Transform, (With<Player>, Without<PlayerCameraTarget>)>,
+//     mut player_camera_target_position: Query<&mut Transform, (With<PlayerCameraTarget>, Without<Player>)>,
+// ) {
+//     if let Ok(player_transform) = player_position.get_single() {
+//         if let Ok(mut player_camera_target_transform) = player_camera_target_position.get_single_mut() {
+//             *player_camera_target_transform = *player_transform;
+//         }
+//     }
+// }
+
 fn spawn_player(
     mut commands: Commands,
     mut meshes: ResMut<Assets<Mesh>>,
@@ -43,6 +58,15 @@ fn spawn_player(
     let player_dimensions = Vec3::new(2.5, 1.0, 3.0);
     let player_position = Vec3::new(0.0, 10.0, 0.0);
     let player_name = "Player";
+
+    commands.spawn((
+        PbrBundle {
+            transform: Transform::from_xyz(player_position.x, player_position.y, player_position.z),
+            ..default()
+        },
+        PlayerCameraTarget,
+        ThirdPersonCameraTarget
+    ));
 
     let player = (
         MaterialMeshBundle {
@@ -73,7 +97,6 @@ fn spawn_player(
             ..default()
         },
         Collider::cuboid(player_dimensions.x / 2.0, player_dimensions.y / 2.0, player_dimensions.z / 2.0),
-        //ThirdPersonCameraTarget,
         Name::new(player_name),
         thermal_render_layer,
     );

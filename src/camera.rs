@@ -3,7 +3,7 @@ use bevy::{
     pbr::ExtendedMaterial, prelude::*, 
     render::view::RenderLayers
 };
-
+use bevy_third_person_camera::{camera::Zoom, ThirdPersonCamera};
 
 use crate::{
     materials::{Thermal, ThermalMaterialExtension}, 
@@ -47,10 +47,10 @@ fn spawn_camera(
                 .looking_at(Vec3::ZERO, Vec3::Y),
             ..default()
         },        
-        // ThirdPersonCamera {
-        //     zoom: Zoom::new(1.0, 40.0),
-        //     ..default()
-        // },
+        ThirdPersonCamera {
+            zoom: Zoom::new(1.0, 40.0),
+            ..default()
+        },
         PostProcessSettings {
             intensity: 0.0,
             ..default()
