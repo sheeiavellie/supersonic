@@ -1,3 +1,3 @@
-![alt text](https://github.com/sheeiavellie/supersonic/raw/master/images/logo_full.svg)
+![supersonic logo](https://github.com/sheeiavellie/supersonic/raw/master/images/logo_full_small.png)
 
 ## Cool
