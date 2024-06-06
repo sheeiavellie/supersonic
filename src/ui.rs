@@ -17,30 +17,40 @@ struct FpsText;
 fn setup_ui(
     mut commands: Commands, asset_server: Res<AssetServer>
 ) {
+    let font_size = 15.0;
+    let font_color = Color::WHITE;
+
     commands.spawn((
         TextBundle::from_sections([
             TextSection::new(
                 "FPS: ",
                 TextStyle {
                     font: asset_server.load("fonts/Wellfleet-Regular.ttf"),
-                    font_size: 60.0,
+                    font_size: font_size,
+                    color: font_color,
                     ..default()
                 },
             ),
             TextSection::from_style(if cfg!(feature = "default_font") {
                 TextStyle {
-                    font_size: 60.0,
-                    color: Color::GOLD,
+                    font_size: font_size,
+                    color: font_color,
                     ..default()
                 }
             } else {
                 TextStyle {
                     font: asset_server.load("fonts/Wellfleet-Regular.ttf"),
-                    font_size: 60.0,
-                    color: Color::GOLD,
+                    font_size: font_size,
+                    color: font_color,
                 }
             }),
-        ]),
+        ])
+        .with_style(Style {
+            position_type: PositionType::Absolute,
+            bottom: Val::Px(5.0),
+            right: Val::Px(5.0),
+            ..default()
+        }),
         FpsText,
     ));
 }
