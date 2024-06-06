@@ -1,3 +1,3 @@
-<img src="https://imgur.com/a/uzvJ9VS.png" width=50% height=50%>
+![alt text](https://github.com/sheeiavellie/supersonic/raw/master/images/logo_full.png)
 
 ## Cool
