@@ -47,7 +47,7 @@ fn did_change_height() {
     input.press(KeyCode::ArrowUp);
     app.insert_resource(input.clone());
 
-    let mut current_position = app.world.get::<Transform>(player_id).unwrap().translation;
+    let current_position = app.world.get::<Transform>(player_id).unwrap().translation;
 
     assert_eq!(app.world.get::<Transform>(player_id).unwrap().translation, current_position);
 }
