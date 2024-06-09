@@ -4,6 +4,9 @@ use bevy_inspector_egui::quick::WorldInspectorPlugin;
 
 use bevy_third_person_camera::*;
 
+#[cfg(test)]
+mod tests;
+
 mod player;
 mod camera;
 mod world;
