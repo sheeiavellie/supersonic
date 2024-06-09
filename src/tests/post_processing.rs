@@ -1,4 +1,4 @@
-use bevy::{app::App, prelude::*};
+use bevy::prelude::*;
 
 use crate::{
     camera::{update_post_processing, IsPostProcessingActive}, 
@@ -11,7 +11,7 @@ fn did_switch_camera_mode() {
 
     app.add_systems(Update, update_post_processing);
 
-    let main_camera = app.world
+    let camera_id = app.world
         .spawn((
             IsPostProcessingActive(false),
             PostProcessSettings {
@@ -20,7 +20,7 @@ fn did_switch_camera_mode() {
         ))
         .id();
 
-    assert!(app.world.get::<IsPostProcessingActive>(main_camera).is_some());
+    assert!(app.world.get::<IsPostProcessingActive>(camera_id).is_some());
     
     let mut input = ButtonInput::<KeyCode>::default();
     input.press(KeyCode::KeyJ);
@@ -30,7 +30,7 @@ fn did_switch_camera_mode() {
 
     app.update();
 
-    assert_eq!(app.world.get::<IsPostProcessingActive>(main_camera).unwrap().0, true);
+    assert_eq!(app.world.get::<IsPostProcessingActive>(camera_id).unwrap().0, true);
 
     app.world.resource_mut::<ButtonInput<KeyCode>>().clear();
 
@@ -43,5 +43,5 @@ fn did_switch_camera_mode() {
 
     app.update();
 
-    assert_eq!(app.world.get::<IsPostProcessingActive>(main_camera).unwrap().0, false);
+    assert_eq!(app.world.get::<IsPostProcessingActive>(camera_id).unwrap().0, false);
 }
