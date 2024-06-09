@@ -1,14 +1,16 @@
+#[cfg(not(test))]
+use bevy::pbr::ExtendedMaterial;
+#[cfg(not(test))]
+use crate::materials::{Thermal, ThermalMaterialExtension};
+
 use bevy::{
     core_pipeline::core_3d::Camera3dDepthLoadOp, 
-    pbr::ExtendedMaterial, prelude::*, 
+    prelude::*, 
     render::view::RenderLayers
 };
 use bevy_third_person_camera::{camera::Zoom, ThirdPersonCamera};
 
-use crate::{
-    materials::{Thermal, ThermalMaterialExtension}, 
-    post_processing::PostProcessSettings
-};
+use crate::post_processing::PostProcessSettings;
 
 pub struct CameraPlugin;
 
@@ -22,10 +24,10 @@ impl Plugin for CameraPlugin {
 
 // components
 #[derive(Component)]
-struct IsPostProcessingActive(bool);
+pub struct IsPostProcessingActive(pub bool);
 
 #[derive(Component)]
-struct MainCamera;
+pub struct MainCamera;
 
 #[derive(Component)]
 struct ThermalMaterialCamera;
@@ -90,10 +92,13 @@ fn sync_cameras(
     }
 }
 
-fn update_post_processing(
+pub fn update_post_processing(
     mut settings: Query<(&mut PostProcessSettings, &mut IsPostProcessingActive)>,
     keys: Res<ButtonInput<KeyCode>>,
+
+    #[cfg(not(test))]
     mut mat: Query<&mut Handle<ExtendedMaterial<StandardMaterial, ThermalMaterialExtension>>, With<Thermal>>,
+    #[cfg(not(test))]
     mut ext_materials: ResMut<Assets<ExtendedMaterial<StandardMaterial, ThermalMaterialExtension>>>,
 ) {
     for (mut setting, mut is_active) in &mut settings {
@@ -104,6 +109,7 @@ fn update_post_processing(
 
                     setting.intensity = 0.0;
 
+                    #[cfg(not(test))]
                     for mut material in mat.iter_mut() {
                         *material = ext_materials.add(ExtendedMaterial {
                             base: StandardMaterial {
@@ -123,6 +129,7 @@ fn update_post_processing(
 
                     setting.intensity = 1.0;
 
+                    #[cfg(not(test))]
                     for mut material in mat.iter_mut() {
                         *material = ext_materials.add(ExtendedMaterial {
                             base: StandardMaterial {
@@ -136,20 +143,6 @@ fn update_post_processing(
                             },
                         });
                     }
-
-                    // if let Ok(mut ma) = mat.get_single_mut() {
-                    //     *ma = ext_materials.add(ExtendedMaterial {
-                    //         base: StandardMaterial {
-                    //             base_color: Color::RED,
-                    //             ..default()
-                    //         },
-                    //         extension: ThermalMaterialExtension { 
-                    //             temperature: 15.0,
-                    //             intensity: 1.0,
-                    //             is_infrared_mode_active: 1,
-                    //         },
-                    //     });
-                    // }
                 },
             }
         }
