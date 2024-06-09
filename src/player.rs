@@ -18,9 +18,9 @@ impl Plugin for PlayerPlugin {
 struct PlayerCameraTarget;
 
 #[derive(Component)]
-struct Player;
+pub struct Player;
 
-fn player_movement(
+pub fn player_movement(
     keys: Res<ButtonInput<KeyCode>>,
     mut controllers: Query<&mut ExternalImpulse, With<Player>>,
 ) {
