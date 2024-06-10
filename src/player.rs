@@ -4,6 +4,7 @@ use bevy_third_person_camera::ThirdPersonCameraTarget;
 
 use crate::materials::{Thermal, ThermalMaterialExtension};
 
+/// Plugin for the drone models and a Player.
 pub struct PlayerPlugin;
 
 impl Plugin for PlayerPlugin {
@@ -14,12 +15,19 @@ impl Plugin for PlayerPlugin {
     }
 }
 
+/// Player camera target.
+/// 
+/// Use it as a way to avoid physics engine bugs.
 #[derive(Component)]
 struct PlayerCameraTarget;
 
+/// Describes Player.
 #[derive(Component)]
 pub struct Player;
 
+/// System that contains logic for Player movement.
+/// 
+/// Currently Player can move Up and Down by applying `ExternalImpulse`s.
 pub fn player_movement(
     keys: Res<ButtonInput<KeyCode>>,
     mut controllers: Query<&mut ExternalImpulse, With<Player>>,
@@ -48,6 +56,7 @@ pub fn player_movement(
 //     }
 // }
 
+/// System for initializing Player and other drone models.
 fn spawn_player(
     mut commands: Commands,
     mut meshes: ResMut<Assets<Mesh>>,

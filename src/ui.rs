@@ -1,5 +1,6 @@
 use bevy::{app::AppExit, diagnostic::{DiagnosticsStore, FrameTimeDiagnosticsPlugin}, prelude::*, ui::FocusPolicy};
 
+/// Plugin for User Interface.
 pub struct UIPlugin;
 
 impl Plugin for UIPlugin {
@@ -11,18 +12,25 @@ impl Plugin for UIPlugin {
     }
 }
 
+/// Describes normal color for a button.
 const NORMAL_BUTTON: Color = Color::rgb(0.15, 0.15, 0.15);
+/// Describes color for a button when it's hovered.
 const HOVERED_BUTTON: Color = Color::rgb(0.35, 0.35, 0.35);
+/// Describes color for a button when it's pressed.
 const PRESSED_BUTTON: Color = Color::rgb(1.0, 1.0, 1.0);
 
+/// Describes dialog menu background color.
 const DIALOG_MENU_BACKGROUND: Color = Color::rgb(0.35, 0.35, 0.35);
 
+/// Component that describes `TextBundle` for the FPS counter.
 #[derive(Component)]
 struct FpsText;
 
+/// Describes dialog menu.
 #[derive(Component)]
 struct DialogMenu;
 
+/// User interface initialization.
 fn setup_ui(
     mut commands: Commands,
     asset_server: Res<AssetServer>,
@@ -144,6 +152,7 @@ fn setup_ui(
         });
 }
 
+/// System for despawning an existing dialog menu entity.
 fn despawn_dialog_menu(
     commands: &mut Commands,
     dialog_menu_query: &Query<Entity, With<DialogMenu>>,
@@ -153,6 +162,7 @@ fn despawn_dialog_menu(
     }
 }
 
+/// System for spawning a new dialog menu.
 fn build_dialog_menu(
     commands: &mut Commands,
     asset_server: &Res<AssetServer>,
@@ -238,6 +248,7 @@ fn build_dialog_menu(
         });
 }
 
+/// System that updates FPS value in FPS counter.
 fn fps_update(
     diagnostics: Res<DiagnosticsStore>,
     mut query: Query<&mut Text, With<FpsText>>,
@@ -251,6 +262,9 @@ fn fps_update(
     }
 }
 
+/// System responsible for all buttons logic.
+/// 
+/// Currently matches button label to it's specific logic.
 fn button_interaction_system(
     mut interaction_query: Query<
         (

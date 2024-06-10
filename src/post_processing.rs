@@ -23,6 +23,7 @@ use bevy::{
     },
 };
 
+/// Post-processing plugin.
 pub struct PostProcessPlugin;
 
 impl Plugin for PostProcessPlugin {
@@ -191,6 +192,11 @@ impl FromWorld for PostProcessPipeline {
     }
 }
 
+/// Post-processing settings.
+/// 
+/// Use `intensity` to control the intensity of post-processing effect.
+/// 
+/// Generally, if `intensity` is set to 0.0, the effect is not applyed. If it's set to 1.0, the effect is fully applied.
 #[derive(Component, Default, Clone, Copy, ExtractComponent, ShaderType)]
 pub struct PostProcessSettings {
     pub intensity: f32,

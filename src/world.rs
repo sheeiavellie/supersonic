@@ -3,6 +3,7 @@ use bevy_rapier3d::prelude::*;
 
 use crate::materials::{Thermal, ThermalMaterialExtension};
 
+/// Plugin responsible for World.
 pub struct WorldPlugin;
 
 impl Plugin for WorldPlugin {
@@ -14,10 +15,14 @@ impl Plugin for WorldPlugin {
 }
 
 // components
+/// Describes an entity that rotates.
 #[derive(Component)]
 struct Rotates;
 
 // systems
+/// System that spawns debug cubes of different colors. One of them has `ExtendedMaterial` with `ThermalMaterialExtension`.
+/// 
+/// Should be removed later.
 fn spawn_cubes(
     mut commands: Commands,
     mut meshes: ResMut<Assets<Mesh>>,
@@ -74,6 +79,9 @@ fn spawn_cubes(
     ));
 }
 
+/// Spawns light.
+/// 
+/// It's important to mention, that light should be rendered in all layers. Use ` RenderLayers::all()`.
 fn spawn_light(
     mut commands: Commands,
 ) {
@@ -95,6 +103,9 @@ fn spawn_light(
     commands.spawn(light);
 }
 
+/// Spawns floor.
+/// 
+/// Floor has a collider, so it should interact with physical objects.
 fn spawn_floor(
     mut commands: Commands,
     mut meshes: ResMut<Assets<Mesh>>,
@@ -115,6 +126,7 @@ fn spawn_floor(
         .insert(Name::new(floor_name));
 }
 
+/// Describes the rotation of an entity.
 fn rotate(
     time: Res<Time>, 
     mut query: Query<&mut Transform, With<Rotates>>,

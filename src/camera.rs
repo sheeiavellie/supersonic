@@ -12,6 +12,7 @@ use bevy_third_person_camera::{camera::Zoom, ThirdPersonCamera};
 
 use crate::post_processing::PostProcessSettings;
 
+/// Plugin for a Camera.
 pub struct CameraPlugin;
 
 impl Plugin for CameraPlugin {
@@ -23,16 +24,22 @@ impl Plugin for CameraPlugin {
 }
 
 // components
+/// Describes whether the thermal post-processing is active or not.
 #[derive(Component)]
 pub struct IsPostProcessingActive(pub bool);
 
+/// Describes the main camera on which post-processing should be applied.
 #[derive(Component)]
 pub struct MainCamera;
 
+/// Describes the thermal camera which should show excluded from post-processing entities.
 #[derive(Component)]
-struct ThermalMaterialCamera;
+pub struct ThermalMaterialCamera;
 
 // systems
+/// System for spawning cameras. 
+/// 
+/// Note, that it uses `RenderLayers` and `Camera3dDepthLoadOp::Load` for `Camera3d`'s `depth_load_op`.
 fn spawn_camera(
     mut commands: Commands,
 ) {
@@ -81,6 +88,7 @@ fn spawn_camera(
     ));
 }
 
+/// System that syncs `MainCamera` and `ThermalCamera` `Transform`s.
 fn sync_cameras(
     main_query: Query<&Transform, (With<MainCamera>, Without<ThermalMaterialCamera>)>,
     mut thermal_query: Query<&mut Transform, (With<ThermalMaterialCamera>, Without<MainCamera>)>,
@@ -92,6 +100,13 @@ fn sync_cameras(
     }
 }
 
+/// System that contains logic for switching visual modes.
+/// 
+/// It changes the intensity of `PostProcessSettings` in order to achive that.
+/// 
+/// Additionally it changes the `is_infrared_mode_active` of `ThermalMaterialExtension`.
+/// 
+/// Also keep in mind that it basicly switches material as a whole.
 pub fn update_post_processing(
     mut settings: Query<(&mut PostProcessSettings, &mut IsPostProcessingActive)>,
     keys: Res<ButtonInput<KeyCode>>,
