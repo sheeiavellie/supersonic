@@ -8,17 +8,6 @@ fn did_change_height() {
     let mut app = App::new();
 
     app.add_plugins(RapierPhysicsPlugin::<NoUserData>::default());
-    app.insert_resource(RapierConfiguration {
-        gravity: Vec3::new(0.0, -9.81, 0.0),
-        physics_pipeline_active: true,
-        query_pipeline_active: true,
-        timestep_mode: TimestepMode::Fixed {
-            dt: 1.0,
-            substeps: 1,
-        },
-        scaled_shape_subdivision: 1,
-        force_update_from_transform_changes: true,
-    });
 
     app.add_systems(Update, player_movement);
 
@@ -47,7 +36,20 @@ fn did_change_height() {
     input.press(KeyCode::ArrowUp);
     app.insert_resource(input.clone());
 
-    let current_position = app.world.get::<Transform>(player_id).unwrap().translation;
+    let mut current_position = app.world.get::<Transform>(player_id).unwrap().translation;
 
-    assert_eq!(app.world.get::<Transform>(player_id).unwrap().translation, current_position);
+    app.update();
+
+    assert_ne!(app.world.get::<Transform>(player_id).unwrap().translation, current_position);
+
+    current_position = app.world.get::<Transform>(player_id).unwrap().translation;
+
+    app.world.resource_mut::<ButtonInput<KeyCode>>().clear();
+
+    input.press(KeyCode::ArrowDown);
+    app.insert_resource(input.clone());
+
+    app.update();
+
+    assert_ne!(app.world.get::<Transform>(player_id).unwrap().translation, current_position);
 }
