@@ -59,7 +59,8 @@ pub fn player_movement(
 /// System for initializing Player and other drone models.
 fn spawn_player(
     mut commands: Commands,
-    mut meshes: ResMut<Assets<Mesh>>,
+    server: Res<AssetServer>,
+    mut _meshes: ResMut<Assets<Mesh>>,
     mut ext_materials: ResMut<Assets<ExtendedMaterial<StandardMaterial, ThermalMaterialExtension>>>,
 ) {
     let thermal_render_layer = RenderLayers::layer(1);
@@ -77,9 +78,11 @@ fn spawn_player(
         ThirdPersonCameraTarget
     ));
 
+    let player_mesh: Handle<Mesh> = server.load("models/drone-model.glb#Mesh0/Primitive0");
+
     let player = (
         MaterialMeshBundle {
-            mesh: meshes.add(Cuboid::from_size(player_dimensions)),
+            mesh: player_mesh,
             material: ext_materials.add(ExtendedMaterial {
                 base: StandardMaterial {
                     base_color: Color::RED,
